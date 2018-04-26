@@ -10,7 +10,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
-login.login_message = 'You must be authorized to see the page'
+login.login_message = 'Вы должны быть зарегистрированным пользователем чтобы зайти на эту страницу'
 
 
 from app import routes, models

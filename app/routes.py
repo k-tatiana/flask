@@ -35,12 +35,11 @@ def hello():
 @app.route('/user/<username>')
 @login_required
 def user(username):
-    user2 = User.query.filter_by(name=username).first_or_404()
+    user = User.query.filter_by(name=username).first_or_404()
     posts = [
-        {'author': user2, 'body': 'Test post #1'},
-        {'author': user2, 'body': 'Test post #2'}
-    ]
-    return render_template('user.html', user=user2, posts=posts)
+        {'author': user, 'body': 'Test post #1'},
+        {'author': user, 'body': 'Test post #2'}]
+    return render_template('user.html', user=user, posts=posts)
 
 
 @app.route('/post/<int:post_id>')
