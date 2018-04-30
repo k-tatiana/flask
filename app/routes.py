@@ -1,10 +1,16 @@
 from app import app, db
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from flask_login import current_user, login_user, logout_user,login_required
 from app.models import User, Post
 from werkzeug.urls import url_parse
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 
 @app.route('/')
@@ -82,3 +88,20 @@ def register():
         flash('Поздравляем, Вы зарегистрировались как новый пользователь')
         return redirect(url_for('login'))
     return render_template('register.html', title= 'Зарегистрироваться', form=form)
+
+@app.route('/edit_profile', methods=['GET','POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.name = form.userEdit.data
+        current_user.about = form.aboutEdit.data
+        db.session.commit()
+        flash('Все изменения были сохранены')
+        return redirect(url_for('edit_profile'))
+    elif request.method =='GET':
+        form.userEdit.data = current_user.name
+        form.aboutEdit.data = current_user.about
+    return render_template('edit_profile.html', title = 'Редактирование профиля пользователя', form=form)
+
+

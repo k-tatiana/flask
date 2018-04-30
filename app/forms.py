@@ -1,7 +1,17 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms import (BooleanField,
+                     StringField,
+                     PasswordField,
+                     SubmitField,
+                     TextAreaField)
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from app.models import User
+
+
+class EditProfileForm(FlaskForm):
+    userEdit = StringField('Пользователь:', validators=[DataRequired()])
+    aboutEdit = TextAreaField('Обо мне:', validators=[Length(max=140)])
+    submitEdit = SubmitField('Сохранить')
 
 
 class LoginForm(FlaskForm):
