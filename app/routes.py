@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user,login_required
-from app.models import User
+from app.models import User, Post
 from werkzeug.urls import url_parse
 
 
@@ -36,9 +36,7 @@ def hello():
 @login_required
 def user(username):
     user = User.query.filter_by(name=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}]
+    posts = Post.query.filter_by(user_id=user.id).all()
     return render_template('user.html', user=user, posts=posts)
 
 
