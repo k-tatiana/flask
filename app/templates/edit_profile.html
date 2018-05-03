@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>
+        Редактировать профиль:
+    </h1>
+    <form action = "" method="post">
+        {{form.hidden_tag() }}
+        <p>
+            {{form.userEdit.label}}
+            {{form.userEdit(size=30)}}
+            {% for error in form.userEdit.errors %}
+            <span style="color: red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{form.aboutEdit.label}}
+            {{form.aboutEdit(size=50, rows=5)}} <br>
+            {% for error in form.aboutEdit.errors %}
+            <span style="color: red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p>{{form.submitEdit()}}</p>
+    </form>
+{% endblock %}

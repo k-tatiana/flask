@@ -6,5 +6,5 @@ from app.models import User, Post
 def make_shell_context():
     return {'db': db, 'User': User, 'Post': Post}
 
-PORT = 5001
+PORT = 5002
 app.run(port=PORT, debug=True)
