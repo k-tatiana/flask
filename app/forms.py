@@ -13,6 +13,15 @@ class EditProfileForm(FlaskForm):
     aboutEdit = TextAreaField('Обо мне:', validators=[Length(max=140)])
     submitEdit = SubmitField('Сохранить')
 
+    def __init__(self, original_username, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        self.original_username = original_username
+
+    def validate_username(self, username):
+        if username.data != self.original_username:
+            user = User.query.filter_by(username=self.username.data).first()
+            if user is not None:
+                raise ValidationError('Используйте другое имя пользователя.')
 
 class LoginForm(FlaskForm):
     username2 = StringField('Пользователь:', validators=[DataRequired()])
