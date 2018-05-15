@@ -25,4 +25,56 @@ class UserModelCase(unittest.TestCase):
                                          '?d=identicon&s=128'))
 
     def test_follow(self):
+        u1 = User(name='john', email='john@example.com')
+        u2 = User(name='sue', email='sue@example.com')
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+        self.assertEqual(u1.followed.all(), [])
+        self.assertEqual(u1.followers.all(), [])
 
+        u1.follow(u2)
+        db.session.commit()
+        self.assertTrue(u1.is_following(u2))
+        self.assertTrue(u2.is_followed(u1))
+        self.assertEqual(u1.followerd.count(), 1)
+        self.assertEqual(u1.followed.first().name, 'sue')
+        self.assertEqual(u2.followers.count(), 1)
+        self.assertEqual(u2.followers.first().name, 'john')
+
+        u1.unfollow(u2)
+        db.session.commit()
+        self.assertFalse(u1.is_following(u2))
+        self.assertEqual(u1.followed.count(), 0)
+        self.assertEqual(u2.followers.count(), 0)
+
+    def test_follow_posts(self):
+        # create two users
+        u1 = User(name='john', email='john@example.com')
+        u2 = User(name='sue', email='sue@example.com')
+        u3 = User(name='sam', email='sam@example.com')
+        db.session.add_all([u1, u2, u3])
+
+        # create posts
+        now = datetime.utcnow()
+        p1 = Post(body='I want to say', author=u1, timestamp= now() + timedelta(seconds=1))
+        p2 = Post(body='I want to say too', author=u2, timestamp=now()+timedelta(seconds=2))
+        p3 = Post(body='Shut up!', author=u3, timestamp=now()+timedelta(seconds=3))
+        db.session.add_all([p1, p2, p3])
+        db.session.commit()
+
+        u1.follow(u2)
+        u1.follow(u3)
+        u2.follow(u3)
+        u3.follow(u1)
+        db.session.commit()
+
+        f1 = u1.followed_posts().all()
+        f2 = u2.followed_posts().all()
+        f3 = u3.followed_posts().all()
+        self.assertEqual(f1, [p2, p3])
+        self.assertEqual(f2, p3)
+        self.assertEqual(f3, p1)
+
+if __name__=='__main__':
+    unittest.main(verbosity=2)
