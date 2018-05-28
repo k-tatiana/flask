@@ -105,3 +105,33 @@ def edit_profile():
     return render_template('edit_profile.html', title = 'Редактирование профиля пользователя', form=form)
 
 
+@app.route('/follow/<name>')
+@login_required
+def follow(username):
+    user = User.query.filter_by(name=username).first()
+    if user is None:
+        flash('Пользователь {name} не найден.'.format(username))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('Вы не можете быть собственным фолловером.')
+        return redirect(url_for('user', name=username))
+    current_user.follow(user)
+    db.session.commit()
+    flash('Вы теперь фолловер {}!'.format(username))
+    return redirect(url_for('user', name=username))
+
+@app.route('/unfollow/<name>')
+@login_required
+def unfollow(username):
+    user = User.query.filter_by(name=username).first()
+    if user is None:
+        flash('Фигня какая-то с {}'.format(username))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('Зачем ты отписываешься от себя? Очнись!')
+        return redirect(url_for('user',name=username))
+    current_user.unfollow(user)
+    flash('Вы успешно отписались от {}'.format(username))
+    return redirect(url_for('user', name=username))
+
+

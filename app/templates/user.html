@@ -9,9 +9,14 @@
                 {% if user.last_seen %}
                     <p>Дата последнего посещения: <br> {{user.last_seen}}</p>
                 {% endif %}
+                <p>{{user.followers.count() }} кумиров, {{user.followed.count()}} последователей. </p>
 
                 {% if user == current_user %}
                 <p><a href="{{ url_for('edit_profile') }}">Редактировать профиль</a> </p>
+                {% elif not current_user.is_following(user) %}
+                <p><a href="{{url_for('follow',name=username) }}">Последовать за идолом! </a> </p>
+                {% else %}
+                <p><a href="{{url_for('follow',name=username) }}">Да пошёл он нахрен! </a> </p>
                 {% endif %}
             </td>
         </tr>
